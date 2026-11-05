@@ -12,5 +12,5 @@ root=$(git rev-parse --show-toplevel) || exit
 cd -- "$root" || exit
 export GITLFSFIX_TARGET="$1"
 git filter-branch --index-filter \
-    'git --literal-pathspecs rm --cached --ignore-unmatch -- "$GITLFSFIX_TARGET"' \
+    'git update-index --force-remove -- "$GITLFSFIX_TARGET"' \
     --prune-empty --tag-name-filter cat -- --all

@@ -15,7 +15,7 @@ subdirectory. Quote spaces and shell metacharacters. Leading dashes, brackets,
 asterisks and question marks are literal filename characters, not options or Git
 pathspec patterns. Absolute paths, parent traversal, directory-shaped paths,
 missing arguments and extra arguments are refused. No hardcoded filename is
-removed when the argument is omitted.
+removed when the argument is omitted. The index filter removes only the exact file entry in each historical tree. If that path later becomes a directory, its descendants are left intact; no recursive removal is requested.
 
 `git filter-branch` is intentionally run without `--force`, preserving its refusal
 when `refs/original` backups already exist. Inspect and recover those refs
