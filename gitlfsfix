@@ -1,1 +1,16 @@
- git filter-branch --force --index-filter "git rm --cached --ignore-unmatch ORDR1.103_reforged.w3x" --prune-empty --tag-name-filter cat -- --all
+#!/usr/bin/env bash
+
+# One explicit repository-relative filename, never an evaluated pathspec or a
+# hardcoded map name. Keep filter-branch's original-ref safety check enabled.
+if [[ $# -ne 1 || -z $1 || $1 == /* || $1 == */ || $1 == . || $1 == .. ||
+      /$1/ == */../* ]]; then
+    printf 'Usage: bash gitlfsfix <repository-relative-file>\n' >&2
+    exit 2
+fi
+
+root=$(git rev-parse --show-toplevel) || exit
+cd -- "$root" || exit
+export GITLFSFIX_TARGET="$1"
+git filter-branch --index-filter \
+    'git --literal-pathspecs rm --cached --ignore-unmatch -- "$GITLFSFIX_TARGET"' \
+    --prune-empty --tag-name-filter cat -- --all
