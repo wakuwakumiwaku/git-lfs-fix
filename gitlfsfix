@@ -8,7 +8,17 @@ if [[ $# -ne 1 || -z $1 || $1 == /* || $1 == */ || $1 == . || $1 == .. ||
     exit 2
 fi
 
-root=$(git rev-parse --show-toplevel) || exit
+# A sentinel preserves trailing newlines instead of silently selecting a sibling
+# directory. Remove exactly the sentinel and Git's one output-record newline.
+root=$(git rev-parse --show-toplevel && printf '.') || exit
+root=${root%.}
+root=${root%$'\n'}
+# filter-branch also uses newline-stripping $(pwd) internally, so these roots
+# cannot be filtered safely even after correcting our own root discovery.
+if [[ $root == *$'\n' ]]; then
+    printf 'Error: repository roots ending in a newline are unsupported by git filter-branch; refusing to rewrite history.\n' >&2
+    exit 2
+fi
 cd -- "$root" || exit
 export GITLFSFIX_TARGET="$1"
 git filter-branch --index-filter \

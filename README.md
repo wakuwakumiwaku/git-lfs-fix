@@ -17,6 +17,12 @@ pathspec patterns. Absolute paths, parent traversal, directory-shaped paths,
 missing arguments and extra arguments are refused. No hardcoded filename is
 removed when the argument is omitted. The index filter removes only the exact file entry in each historical tree. If that path later becomes a directory, its descendants are left intact; no recursive removal is requested.
 
+Repository roots ending in a newline are refused before rewriting any refs:
+`git filter-branch` itself strips trailing newlines from its working-directory
+record. Root discovery preserves the original path rather than accidentally
+selecting a sibling repository whose name lacks that newline. Spaces and
+internal newlines in repository directory names remain supported.
+
 `git filter-branch` is intentionally run without `--force`, preserving its refusal
 when `refs/original` backups already exist. Inspect and recover those refs
 manually rather than automatically overwriting them. This is a history-removal
